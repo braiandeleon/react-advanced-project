@@ -41,16 +41,34 @@ const LandingSection = () => {
           Contact me
         </Heading>
         <Box p={6} rounded="md" w="100%">
-        <Formik initialValues={formik.initialValues}>
+        <Formik initialValues={formik.initialValues} validate={(values) => {
+           const errors = {};
+           if (!values.firstName) {
+             formik.errors.firstName = "Required";
+           }
+
+           if (!values.email) {
+             errors.email = "Required";
+           } else if (
+             !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+           ) {
+             errors.email = "Invalid email address";
+           }
+           if (!values.password) {
+             errors.password = "Required";
+           }
+           return errors;
+         }}>
           <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4}>
-              <FormControl isInvalid={false}>
+              <FormControl isInvalid={formik.errors.firstName && formik.touched.firstName}>
                 <FormLabel htmlFor="firstName">Name</FormLabel>
                 <Input
                   id="firstName"
                   name="firstName"
-                  value={formik.values.firstName || defaultValues.firstName}
+                  value={formik.values.firstName}
                   onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                 />
                 <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
               </FormControl>
